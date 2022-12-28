@@ -21,7 +21,7 @@ class FoodComposeActivity : ComponentActivity() {
         setContent {
             FoodComposeTheme {
                 val navController = rememberNavController()
-                //FoodComposeNavHost(navHostController = navController)
+                FoodComposeNavHost(navHostController = navController)
             }
         }
     }
