@@ -73,7 +73,7 @@ val Typography = Typography(
         fontWeight = FontWeight.SemiBold
     ),
     button = TextStyle(
-        color = White,
+        color = Color.Unspecified,
         fontSize = 17.sp,
         fontWeight = FontWeight.W600
     )

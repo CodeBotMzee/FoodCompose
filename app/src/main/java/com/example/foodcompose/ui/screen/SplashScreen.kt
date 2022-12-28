@@ -45,6 +45,7 @@ fun SplashScreen(onClickGetStarted: () -> Unit) {
         }
         FoodBottomButton(
             onClick = onClickGetStarted,
+            text = "Get Started",
             colors = ButtonDefaults.buttonColors(backgroundColor = White, contentColor = Primary)
         )
 

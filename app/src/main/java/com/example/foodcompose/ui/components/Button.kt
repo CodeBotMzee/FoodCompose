@@ -8,7 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FoodBottomButton(onClick: () -> Unit, colors: ButtonColors = ButtonDefaults.buttonColors()) {
+fun FoodBottomButton(
+    onClick: () -> Unit,
+    text: String,
+    colors: ButtonColors = ButtonDefaults.buttonColors()
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -24,7 +28,7 @@ fun FoodBottomButton(onClick: () -> Unit, colors: ButtonColors = ButtonDefaults.
             colors = colors,
             contentPadding = PaddingValues(vertical = 25.dp)
         ) {
-            Text(text = "Get Started", style = MaterialTheme.typography.button)
+            Text(text = text, style = MaterialTheme.typography.button)
         }
     }
 }
