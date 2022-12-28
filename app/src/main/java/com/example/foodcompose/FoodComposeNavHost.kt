@@ -8,8 +8,8 @@ import androidx.navigation.compose.composable
 
 @Composable
 fun FoodComposeNavHost(navHostController: NavHostController, modifier: Modifier = Modifier){
-    NavHost(navController = navHostController, startDestination = Splash.route){
-        
+    NavHost(navController = navHostController, startDestination = Splash.route, modifier = modifier){
+
     }
 }
 
