@@ -2,14 +2,10 @@ package com.example.foodcompose.ui.screen.signuplogin.login
 
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,12 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodcompose.ui.components.FoodBottomButton
 import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
-import com.example.foodcompose.ui.theme.Black
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.ui.theme.SFProText
 
 @Composable
-fun LoginScreen(viewModel: SignUpLoginViewModel) {
+fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
     Column(modifier = Modifier.fillMaxSize()) {
 
         val context = LocalContext.current
@@ -43,8 +38,6 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
         var isPasswordValid by rememberSaveable { viewModel.isPasswordValid }
         var isEmailFieldEmpty by remember { mutableStateOf(false) }
         var isPasswordFieldEmpty by remember { mutableStateOf(false) }
-
-
 
         val focusManager = LocalFocusManager.current
 
@@ -82,12 +75,7 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
                     imeAction = ImeAction.Next
                 ),
                 singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    unfocusedIndicatorColor = Black,
-                    errorIndicatorColor = Primary,
-                    errorLabelColor = Primary,
-                    errorCursorColor = Primary
-                )
+                colors = textFieldColors
             )
             if (isEmailFieldEmpty) {
                 Text(
@@ -141,12 +129,7 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
                     focusManager.clearFocus()
                 }),
                 singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    unfocusedIndicatorColor = Black,
-                    errorIndicatorColor = Primary,
-                    errorLabelColor = Primary,
-                    errorCursorColor = Primary
-                )
+                colors = textFieldColors
             )
             if (isPasswordFieldEmpty) {
                 Text(
