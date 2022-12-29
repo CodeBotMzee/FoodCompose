@@ -10,14 +10,14 @@ import androidx.compose.ui.unit.sp
 import com.example.foodcompose.R
 
 
-private val SFProRounded = FontFamily(
+val SFProRounded = FontFamily(
     Font(R.font.sf_pro_rounded_heavy),
     Font(R.font.sf_pro_rounded_regular),
     Font(R.font.sf_pro_rounded_bold),
     Font(R.font.sf_pro_rounded_semibold),
 )
 
-private val SFProText = FontFamily(
+val SFProText = FontFamily(
     Font(R.font.sf_pro_text_regular),
     Font(R.font.sf_pro_text_semibold)
 )
