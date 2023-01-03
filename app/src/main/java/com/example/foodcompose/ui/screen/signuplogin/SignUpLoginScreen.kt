@@ -30,7 +30,6 @@ fun SignUpLoginScreen(viewModel: SignUpLoginViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         var tabIndex by rememberSaveable { mutableStateOf(0) }
         val tabsTitle = listOf("Login", "Sign Up")

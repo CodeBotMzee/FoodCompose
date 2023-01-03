@@ -47,6 +47,7 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                 .wrapContentHeight()
                 .padding(horizontal = 50.dp, vertical = 65.dp)
         ) {
+            //Text Field for Email
             TextField(
                 value = email,
                 onValueChange = {
