@@ -2,14 +2,10 @@ package com.example.foodcompose.ui.screen.signuplogin.login
 
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,25 +22,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodcompose.ui.components.FoodBottomButton
 import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
-import com.example.foodcompose.ui.theme.Black
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.ui.theme.SFProText
 
 @Composable
-fun LoginScreen(viewModel: SignUpLoginViewModel) {
+fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
     Column(modifier = Modifier.fillMaxSize()) {
 
         val context = LocalContext.current
 
-        //States
+        //Field States
         var email by rememberSaveable { viewModel.email }
-        var isEmailValid by rememberSaveable { viewModel.isEmailValid }
         var password by rememberSaveable { viewModel.password }
-        var isPasswordValid by rememberSaveable { viewModel.isPasswordValid }
-        var isEmailFieldEmpty by remember { mutableStateOf(false) }
-        var isPasswordFieldEmpty by remember { mutableStateOf(false) }
 
+        //Fields Validity States
+        var emailValid by rememberSaveable { viewModel.emailValid }
+        var passwordValid by rememberSaveable { viewModel.passwordValid }
 
+        //Are Fields Empty
+        var emailFieldEmpty by remember { mutableStateOf(false) }
+        var passwordFieldEmpty by remember { mutableStateOf(false) }
 
         val focusManager = LocalFocusManager.current
 
@@ -54,15 +51,16 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
                 .wrapContentHeight()
                 .padding(horizontal = 50.dp, vertical = 65.dp)
         ) {
+            //Text Field for Email
             TextField(
                 value = email,
                 onValueChange = {
                     email = it
                     if (email.isEmpty()) {
-                        isEmailValid = true
+                        emailValid = true
                     } else {
-                        isEmailFieldEmpty = false
-                        isEmailValid = Patterns.EMAIL_ADDRESS
+                        emailFieldEmpty = false
+                        emailValid = Patterns.EMAIL_ADDRESS
                             .matcher(email)
                             .matches()
                     }
@@ -76,27 +74,22 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
                     )
                 },
                 placeholder = { Text(text = "example@gmail.com") },
-                isError = !isEmailValid,
+                isError = !emailValid,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 ),
                 singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    unfocusedIndicatorColor = Black,
-                    errorIndicatorColor = Primary,
-                    errorLabelColor = Primary,
-                    errorCursorColor = Primary
-                )
+                colors = textFieldColors
             )
-            if (isEmailFieldEmpty) {
+            if (emailFieldEmpty) {
                 Text(
                     "Please Enter an Email",
                     color = Primary,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-            if (!isEmailValid) {
+            if (!emailValid) {
                 Text(
                     "Please Enter a correct Email",
                     color = Primary,
@@ -116,10 +109,10 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
                 onValueChange = {
                     password = it
                     if (password.isEmpty()) {
-                        isPasswordValid = true
+                        passwordValid = true
                     } else {
-                        isPasswordFieldEmpty = false
-                        isPasswordValid = password.length >= 7
+                        passwordFieldEmpty = false
+                        passwordValid = password.length >= 7
                     }
                 },
                 modifier = Modifier
@@ -131,7 +124,7 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
                     )
                 },
                 placeholder = { Text(text = "*********") },
-                isError = !isPasswordValid,
+                isError = !passwordValid,
                 visualTransformation = PasswordVisualTransformation('*'),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -141,21 +134,16 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
                     focusManager.clearFocus()
                 }),
                 singleLine = true,
-                colors = TextFieldDefaults.textFieldColors(
-                    unfocusedIndicatorColor = Black,
-                    errorIndicatorColor = Primary,
-                    errorLabelColor = Primary,
-                    errorCursorColor = Primary
-                )
+                colors = textFieldColors
             )
-            if (isPasswordFieldEmpty) {
+            if (passwordFieldEmpty) {
                 Text(
                     "Please Enter a Password",
                     color = Primary,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-            if (!isPasswordValid) {
+            if (!passwordValid) {
                 Text(
                     "Password is Incorrect",
                     color = Primary,
@@ -177,9 +165,9 @@ fun LoginScreen(viewModel: SignUpLoginViewModel) {
 
         //Login Button
         FoodBottomButton(onClick = {
-            isEmailFieldEmpty = email.isEmpty()
-            isPasswordFieldEmpty = password.isEmpty()
-            if (!isEmailFieldEmpty && !isPasswordFieldEmpty) {
+            emailFieldEmpty = email.isEmpty()
+            passwordFieldEmpty = password.isEmpty()
+            if (!emailFieldEmpty && !passwordFieldEmpty) {
                 Toast.makeText(context, viewModel.login(), Toast.LENGTH_SHORT).show()
             }
         }, text = "Login")

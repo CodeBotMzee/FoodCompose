@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.foodcompose.R
 import com.example.foodcompose.ui.screen.signuplogin.login.LoginScreen
+import com.example.foodcompose.ui.screen.signuplogin.signup.SignUpScreen
 import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
 import com.example.foodcompose.ui.theme.Black
 import com.example.foodcompose.ui.theme.Primary
@@ -29,10 +30,17 @@ fun SignUpLoginScreen(viewModel: SignUpLoginViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         var tabIndex by rememberSaveable { mutableStateOf(0) }
         val tabsTitle = listOf("Login", "Sign Up")
+
+        val textFieldColors = TextFieldDefaults.textFieldColors(
+            unfocusedIndicatorColor = Black,
+            errorIndicatorColor = Primary,
+            errorLabelColor = Primary,
+            errorCursorColor = Primary
+        )
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,8 +85,8 @@ fun SignUpLoginScreen(viewModel: SignUpLoginViewModel = hiltViewModel()) {
 
         }
         when (tabIndex) {
-            0 -> LoginScreen(viewModel = viewModel)
-            1 -> {}
+            0 -> LoginScreen(viewModel = viewModel, textFieldColors = textFieldColors)
+            1 -> SignUpScreen(viewModel = viewModel, textFieldColors = textFieldColors)
         }
 
     }
