@@ -1,14 +1,17 @@
 package com.example.foodcompose.module
 
 import android.content.Context
+import com.example.foodcompose.data.authentication.FirebaseSource
 import com.example.foodcompose.data.network.user.UserRemoteDataSource
 import com.example.foodcompose.data.network.user.UserService
+import com.example.foodcompose.data.repository.AuthRepository
 import com.example.foodcompose.data.repository.UserRepository
 import com.example.foodcompose.data.room.AppDatabase
 import com.example.foodcompose.data.room.dao.UserDao
 import com.example.foodcompose.util.AuthHeaderInterceptor
 import com.example.foodcompose.util.Converters
 import com.example.foodcompose.util.LoggingInterceptor
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -58,7 +61,17 @@ object AppModule {
     @Provides
     fun provideDatabase(@ApplicationContext appContext: Context, converters: Converters) =
         AppDatabase.getDatabase(appContext, converters)
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
 
+    @Singleton
+    @Provides
+    fun provideFirebaseSource(firebaseAuth: FirebaseAuth) = FirebaseSource(firebaseAuth)
+
+    @Singleton
+    @Provides
+    fun provideAuthRepository(firebaseSource: FirebaseSource) = AuthRepository(firebaseSource)
     @Singleton
     @Provides
     fun provideUserService(retrofit: Retrofit):UserService = retrofit.create(UserService::class.java)

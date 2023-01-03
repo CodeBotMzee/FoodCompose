@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "933483968389",
+    "project_id": "food-compose",
+    "storage_bucket": "food-compose.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933483968389:android:b40aba3b4603ce63df36ec",
+        "android_client_info": {
+          "package_name": "com.example.foodcompose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "933483968389-lftjrpr0dosjso9ic0v6j672ue0hvri5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeX1fTSs-IoWbE88t4y5e1tgSOZaIE4Bo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "933483968389-lftjrpr0dosjso9ic0v6j672ue0hvri5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
