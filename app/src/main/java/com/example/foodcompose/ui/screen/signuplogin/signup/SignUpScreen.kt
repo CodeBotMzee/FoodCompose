@@ -35,16 +35,16 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
         var confirmPassword by rememberSaveable { viewModel.confirmPassword }
 
         //Fields Validity States
-        var isEmailValid by rememberSaveable { mutableStateOf(true) }
-        var isPasswordValid by rememberSaveable { mutableStateOf(true) }
-        var isConfirmPasswordValid by rememberSaveable { mutableStateOf(true) }
+        var emailValid by rememberSaveable { mutableStateOf(true) }
+        var passwordValid by rememberSaveable { mutableStateOf(true) }
+        var confirmPasswordValid by rememberSaveable { mutableStateOf(true) }
 
         //Are Fields Empty
-        var isFirstNameFieldEmpty by remember { mutableStateOf(false) }
-        var isLastNameFieldEmpty by remember { mutableStateOf(false) }
-        var isEmailFieldEmpty by remember { mutableStateOf(false) }
-        var isPasswordFieldEmpty by remember { mutableStateOf(false) }
-        var isConfirmPasswordFieldEmpty by remember { mutableStateOf(false) }
+        var firstNameFieldEmpty by remember { mutableStateOf(false) }
+        var lastNameFieldEmpty by remember { mutableStateOf(false) }
+        var emailFieldEmpty by remember { mutableStateOf(false) }
+        var passwordFieldEmpty by remember { mutableStateOf(false) }
+        var confirmPasswordFieldEmpty by remember { mutableStateOf(false) }
 
         //Focus Manager
         val focusManager = LocalFocusManager.current
@@ -73,7 +73,7 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                         onValueChange = {
                             firstName = it
                             if (firstName.isNotEmpty()) {
-                                isFirstNameFieldEmpty = false
+                                firstNameFieldEmpty = false
                             }
                         },
                         modifier = Modifier
@@ -92,7 +92,7 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                         singleLine = true,
                         colors = textFieldColors
                     )
-                    if (isFirstNameFieldEmpty) {
+                    if (firstNameFieldEmpty) {
                         Text(
                             "Please Enter your First Name",
                             color = Primary,
@@ -119,7 +119,7 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                         onValueChange = {
                             lastName = it
                             if (lastName.isNotEmpty()) {
-                                isLastNameFieldEmpty = false
+                                lastNameFieldEmpty = false
                             }
                         },
                         modifier = Modifier
@@ -138,7 +138,7 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                         singleLine = true,
                         colors = textFieldColors
                     )
-                    if (isLastNameFieldEmpty) {
+                    if (lastNameFieldEmpty) {
                         Text(
                             "Please Enter your Last Name",
                             color = Primary,
@@ -161,10 +161,10 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                 onValueChange = {
                     email = it
                     if (email.isEmpty()) {
-                        isEmailValid = true
+                        emailValid = true
                     } else {
-                        isEmailFieldEmpty = false
-                        isEmailValid = Patterns.EMAIL_ADDRESS
+                        emailFieldEmpty = false
+                        emailValid = Patterns.EMAIL_ADDRESS
                             .matcher(email)
                             .matches()
                     }
@@ -178,7 +178,7 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                     )
                 },
                 placeholder = { Text(text = "example@gmail.com") },
-                isError = !isEmailValid,
+                isError = !emailValid,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
@@ -187,14 +187,14 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                 colors = textFieldColors
             )
 
-            if (isEmailFieldEmpty) {
+            if (emailFieldEmpty) {
                 Text(
                     "Please Enter an Email",
                     color = Primary,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-            if (!isEmailValid) {
+            if (!emailValid) {
                 Text(
                     "Please Enter a correct Email",
                     color = Primary,
@@ -214,10 +214,10 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                 onValueChange = {
                     password = it
                     if (password.isEmpty()) {
-                        isPasswordValid = true
+                        passwordValid = true
                     } else {
-                        isPasswordFieldEmpty = false
-                        isPasswordValid = password.length >= 7
+                        passwordFieldEmpty = false
+                        passwordValid = password.length >= 7
                     }
                 },
                 modifier = Modifier
@@ -229,7 +229,7 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                     )
                 },
                 placeholder = { Text(text = "*********") },
-                isError = !isPasswordValid,
+                isError = !passwordValid,
                 visualTransformation = PasswordVisualTransformation('*'),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -241,14 +241,14 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                 singleLine = true,
                 colors = textFieldColors
             )
-            if (isPasswordFieldEmpty) {
+            if (passwordFieldEmpty) {
                 Text(
                     "Please Enter a Password",
                     color = Primary,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-            if (!isPasswordValid) {
+            if (!passwordValid) {
                 Text(
                     "Password is Incorrect",
                     color = Primary,
@@ -267,10 +267,10 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                 onValueChange = {
                     confirmPassword = it
                     if (password.isEmpty()) {
-                        isConfirmPasswordValid = true
+                        confirmPasswordValid = true
                     } else {
-                        isConfirmPasswordFieldEmpty = false
-                        isConfirmPasswordValid = password == confirmPassword
+                        confirmPasswordFieldEmpty = false
+                        confirmPasswordValid = password == confirmPassword
                     }
                 },
                 modifier = Modifier
@@ -282,7 +282,7 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                     )
                 },
                 placeholder = { Text(text = "*********") },
-                isError = !isConfirmPasswordValid,
+                isError = !confirmPasswordValid,
                 visualTransformation = PasswordVisualTransformation('*'),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -294,14 +294,14 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
                 singleLine = true,
                 colors = textFieldColors
             )
-            if (isConfirmPasswordFieldEmpty) {
+            if (confirmPasswordFieldEmpty) {
                 Text(
                     "Please Confirm Password",
                     color = Primary,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-            if (!isConfirmPasswordValid) {
+            if (!confirmPasswordValid) {
                 Text(
                     "Password Doesn't Match",
                     color = Primary,
@@ -318,11 +318,11 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
 
         //SignUp Button
         FoodBottomButton(onClick = {
-            isFirstNameFieldEmpty = firstName.isEmpty()
-            isLastNameFieldEmpty = lastName.isEmpty()
-            isEmailFieldEmpty = email.isEmpty()
-            isPasswordFieldEmpty = password.isEmpty()
-            isConfirmPasswordFieldEmpty = confirmPassword.isEmpty()
+            firstNameFieldEmpty = firstName.isEmpty()
+            lastNameFieldEmpty = lastName.isEmpty()
+            emailFieldEmpty = email.isEmpty()
+            passwordFieldEmpty = password.isEmpty()
+            confirmPasswordFieldEmpty = confirmPassword.isEmpty()
         }, text = "Sign Up")
 
     }

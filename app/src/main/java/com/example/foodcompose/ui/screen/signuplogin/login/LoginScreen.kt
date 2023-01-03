@@ -31,13 +31,17 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
 
         val context = LocalContext.current
 
-        //States
+        //Field States
         var email by rememberSaveable { viewModel.email }
-        var isEmailValid by rememberSaveable { viewModel.isEmailValid }
         var password by rememberSaveable { viewModel.password }
-        var isPasswordValid by rememberSaveable { viewModel.isPasswordValid }
-        var isEmailFieldEmpty by remember { mutableStateOf(false) }
-        var isPasswordFieldEmpty by remember { mutableStateOf(false) }
+
+        //Fields Validity States
+        var emailValid by rememberSaveable { viewModel.emailValid }
+        var passwordValid by rememberSaveable { viewModel.passwordValid }
+
+        //Are Fields Empty
+        var emailFieldEmpty by remember { mutableStateOf(false) }
+        var passwordFieldEmpty by remember { mutableStateOf(false) }
 
         val focusManager = LocalFocusManager.current
 
@@ -53,10 +57,10 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                 onValueChange = {
                     email = it
                     if (email.isEmpty()) {
-                        isEmailValid = true
+                        emailValid = true
                     } else {
-                        isEmailFieldEmpty = false
-                        isEmailValid = Patterns.EMAIL_ADDRESS
+                        emailFieldEmpty = false
+                        emailValid = Patterns.EMAIL_ADDRESS
                             .matcher(email)
                             .matches()
                     }
@@ -70,7 +74,7 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                     )
                 },
                 placeholder = { Text(text = "example@gmail.com") },
-                isError = !isEmailValid,
+                isError = !emailValid,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
@@ -78,14 +82,14 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                 singleLine = true,
                 colors = textFieldColors
             )
-            if (isEmailFieldEmpty) {
+            if (emailFieldEmpty) {
                 Text(
                     "Please Enter an Email",
                     color = Primary,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-            if (!isEmailValid) {
+            if (!emailValid) {
                 Text(
                     "Please Enter a correct Email",
                     color = Primary,
@@ -105,10 +109,10 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                 onValueChange = {
                     password = it
                     if (password.isEmpty()) {
-                        isPasswordValid = true
+                        passwordValid = true
                     } else {
-                        isPasswordFieldEmpty = false
-                        isPasswordValid = password.length >= 7
+                        passwordFieldEmpty = false
+                        passwordValid = password.length >= 7
                     }
                 },
                 modifier = Modifier
@@ -120,7 +124,7 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                     )
                 },
                 placeholder = { Text(text = "*********") },
-                isError = !isPasswordValid,
+                isError = !passwordValid,
                 visualTransformation = PasswordVisualTransformation('*'),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -132,14 +136,14 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                 singleLine = true,
                 colors = textFieldColors
             )
-            if (isPasswordFieldEmpty) {
+            if (passwordFieldEmpty) {
                 Text(
                     "Please Enter a Password",
                     color = Primary,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-            if (!isPasswordValid) {
+            if (!passwordValid) {
                 Text(
                     "Password is Incorrect",
                     color = Primary,
@@ -161,9 +165,9 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
 
         //Login Button
         FoodBottomButton(onClick = {
-            isEmailFieldEmpty = email.isEmpty()
-            isPasswordFieldEmpty = password.isEmpty()
-            if (!isEmailFieldEmpty && !isPasswordFieldEmpty) {
+            emailFieldEmpty = email.isEmpty()
+            passwordFieldEmpty = password.isEmpty()
+            if (!emailFieldEmpty && !passwordFieldEmpty) {
                 Toast.makeText(context, viewModel.login(), Toast.LENGTH_SHORT).show()
             }
         }, text = "Login")
