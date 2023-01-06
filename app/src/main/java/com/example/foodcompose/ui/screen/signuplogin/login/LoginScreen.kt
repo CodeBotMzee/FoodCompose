@@ -20,13 +20,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.foodcompose.Home
+import com.example.foodcompose.navigateSingleTopTo
+import com.example.foodcompose.ui.components.DialogBuilder
 import com.example.foodcompose.ui.components.FoodBottomButton
+import com.example.foodcompose.ui.components.ProgressDialog
 import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.ui.theme.SFProText
 
 @Composable
-fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
+fun LoginScreen(
+    navHostController: NavHostController,
+    viewModel: SignUpLoginViewModel,
+    textFieldColors: TextFieldColors
+) {
     Column(modifier = Modifier.fillMaxSize()) {
 
         val context = LocalContext.current
@@ -42,6 +51,16 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
         //Are Fields Empty
         var emailFieldEmpty by remember { mutableStateOf(false) }
         var passwordFieldEmpty by remember { mutableStateOf(false) }
+
+        //Progress Dialog State
+        var dialogState by remember {
+            viewModel.dialogState
+        }
+
+        //Dialog Builder
+        var dialogBuilder by remember {
+            mutableStateOf(false)
+        }
 
         val focusManager = LocalFocusManager.current
 
@@ -167,9 +186,38 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
         FoodBottomButton(onClick = {
             emailFieldEmpty = email.isEmpty()
             passwordFieldEmpty = password.isEmpty()
-            if (!emailFieldEmpty && !passwordFieldEmpty) {
-                Toast.makeText(context, viewModel.login(), Toast.LENGTH_SHORT).show()
+            if (emailFieldEmpty || passwordFieldEmpty) {
+                Toast.makeText(context, "Fields can't be Empty", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.login(
+                    moveTO = { navHostController.navigateSingleTopTo(Home.route) },
+                    context, moveTODialogBuilder = {
+                        dialogBuilder = true
+                    }
+                )
             }
         }, text = "Login")
+
+        if (dialogState) {
+            ProgressDialog {
+                dialogState = false
+            }
+        }
+
+        if (dialogBuilder) {
+            DialogBuilder(
+                onButtonClick = {
+                    viewModel.pagerState.value = 1
+                    viewModel.newUserEmail()
+                },
+                onDismissRequest = {
+                    dialogBuilder = false
+                },
+                title = "Would You Like to Sign Up",
+                activeButtonText = "Sign UP",
+                dismissButtonText = "Cancel"
+            )
+        }
+
     }
 }

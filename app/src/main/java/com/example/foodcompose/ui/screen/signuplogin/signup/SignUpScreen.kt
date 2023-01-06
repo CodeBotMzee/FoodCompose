@@ -1,6 +1,7 @@
 package com.example.foodcompose.ui.screen.signuplogin.signup
 
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -10,22 +11,29 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.foodcompose.Home
+import com.example.foodcompose.navigateSingleTopTo
 import com.example.foodcompose.ui.components.FoodBottomButton
+import com.example.foodcompose.ui.components.ProgressDialog
 import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
 import com.example.foodcompose.ui.theme.Primary
 
 @Composable
-fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
+fun SignUpScreen(navHostController: NavHostController,viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        //CONTEXT
+        val context = LocalContext.current
 
         //Fields States
         var firstName by rememberSaveable { viewModel.firstName }
@@ -48,6 +56,11 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
 
         //Focus Manager
         val focusManager = LocalFocusManager.current
+
+        //Progress Dialog State
+        var dialogState by remember {
+            viewModel.dialogState
+        }
 
         Column(
             modifier = Modifier
@@ -323,7 +336,22 @@ fun SignUpScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColo
             emailFieldEmpty = email.isEmpty()
             passwordFieldEmpty = password.isEmpty()
             confirmPasswordFieldEmpty = confirmPassword.isEmpty()
+            if(firstNameFieldEmpty || lastNameFieldEmpty || emailFieldEmpty || passwordFieldEmpty || confirmPasswordFieldEmpty){
+                Toast.makeText(context, "Fields can't be Empty", Toast.LENGTH_SHORT).show()
+            }else if(password!=confirmPassword){
+                Toast.makeText(context, "Password and Confirm Password do not Match", Toast.LENGTH_SHORT).show()
+            }else{
+                viewModel.signUp(moveTO = {
+                    navHostController.navigateSingleTopTo(Home.route)
+                },context)
+            }
         }, text = "Sign Up")
+
+        if (dialogState) {
+            ProgressDialog {
+                dialogState = false
+            }
+        }
 
     }
 

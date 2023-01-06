@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.foodcompose.ui.screen.SplashScreen
+import com.example.foodcompose.ui.screen.home.HomeScreen
 import com.example.foodcompose.ui.screen.signuplogin.SignUpLoginScreen
 
 @Composable
@@ -17,19 +18,21 @@ fun FoodComposeNavHost(navHostController: NavHostController, modifier: Modifier 
         modifier = modifier
     ) {
         composable(route = Splash.route) {
-            SplashScreen(onClickGetStarted = {
-                navHostController.navigateSingleTopTo(route = SignUpLogin.route)
-            })
+            SplashScreen(navHostController)
         }
         composable(route = SignUpLogin.route) {
-            SignUpLoginScreen()
+            SignUpLoginScreen(navHostController)
         }
+        composable(route = Home.route) {
+            HomeScreen(navHostController)
+        }
+
 
     }
 }
 
 
-public fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route) {
+fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route) {
     popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) {
         saveState = true
     }

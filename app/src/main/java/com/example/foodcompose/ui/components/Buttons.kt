@@ -1,6 +1,5 @@
 package com.example.foodcompose.ui.components
 
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -34,5 +33,27 @@ fun FoodBottomButton(
         ) {
             Text(text = text, style = MaterialTheme.typography.button)
         }
+    }
+}
+
+@Composable
+fun FoodButton(
+    onClick: () -> Unit,
+    text: String,
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    interactionSource: MutableInteractionSource = MutableInteractionSource()
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        interactionSource = interactionSource,
+        elevation = ButtonDefaults.elevation(3.dp),
+        colors = colors,
+        contentPadding = PaddingValues(vertical = 25.dp)
+    ) {
+        Text(text = text, style = MaterialTheme.typography.button)
     }
 }

@@ -1,20 +1,23 @@
 package com.example.foodcompose.ui.screen.signuplogin.viewmodel
 
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.foodcompose.data.repository.AuthRepository
-import com.example.foodcompose.util.Resource
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpLoginViewModel @Inject constructor(private val authRepository: AuthRepository) :
     ViewModel() {
+
+    var pagerState = mutableStateOf(0)
+
     //Login States
     var email = mutableStateOf("")
     var emailValid = mutableStateOf(true)
@@ -28,42 +31,79 @@ class SignUpLoginViewModel @Inject constructor(private val authRepository: AuthR
     var signUpPassword = mutableStateOf("")
     var confirmPassword = mutableStateOf("")
 
-    val profileUpdates = userProfileChangeRequest {
-        displayName = "${firstName.value} + ${lastName.value}"
+    var dialogState = mutableStateOf(false)
+
+    var user = authRepository.getCurrentUser()
+
+    fun newUserEmail() {
+        signUpEmail.value = email.value
+        email.value = ""
+        password.value = ""
     }
 
+    fun login(moveTO: () -> Unit, context: Context, moveTODialogBuilder: () -> Unit) {
+        dialogState.value = true
+        authRepository.signInWithEmailAndPassword(email = email.value, password = password.value)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    dialogState.value = false
+                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                    moveTO()
+                    resetStates()
+                } else {
 
-    private val testEmail = "test@gmail.com"
-    private val testPassword = "test123"
+                    val errorCode = (it.exception as FirebaseAuthException).errorCode
+                    Log.e("Exception ", errorCode)
+                    dialogState.value = false
+                    when (errorCode) {
+                        "ERROR_USER_NOT_FOUND" -> {
+                            Toast.makeText(context, "User Does Not Exist", Toast.LENGTH_SHORT)
+                                .show()
+                            moveTODialogBuilder()
+                        }
+                    }
+                }
+            }
 
-    fun login(): String {
-        return when {
-            !emailValid.value || !passwordValid.value -> "Email or Password is not Valid"
-            email.value != testEmail -> "Email is Incorrect"
-            password.value != testPassword -> "Password is Incorrect"
-            else -> "Login Successful"
-        }
 
     }
 
-    fun signUp(): MutableStateFlow<Resource<FirebaseUser?>> {
-        val result = MutableStateFlow<Resource<FirebaseUser?>>(Resource.loading())
-
-
+    fun signUp(moveTO: () -> Unit, context: Context) {
+        dialogState.value = true
         authRepository.signUpWithEmailAndPassword(
             email = signUpEmail.value,
             password = signUpPassword.value
-        ).addOnCompleteListener {
+        ).addOnCompleteListener { it ->
             if (it.isSuccessful) {
-                result.value = Resource.success(it.result!!.user)
-            }else{
-                it.exception.let { exception->
-                    result.value = Resource.error(exception?.message.toString(),null)
-                }
+                authRepository.changeUserProfile(profileChangeRequest = userProfileChangeRequest {
+                    displayName = firstName.value + " " + lastName.value
+                })
+                    ?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
+                            moveTO()
+                            dialogState.value = false
+                            resetStates()
+                        }
+                    }
+
+            } else {
+                Toast.makeText(context, it.exception?.localizedMessage, Toast.LENGTH_SHORT).show()
+                dialogState.value = false
             }
         }
+    }
 
-        return result
+    private fun resetStates() {
+        // Login States
+        email.value = ""
+        password.value = ""
+        // Sign Up States
+        firstName.value = ""
+        lastName.value = ""
+        signUpEmail.value = ""
+        signUpPassword.value = ""
+        confirmPassword.value = ""
     }
 
 }

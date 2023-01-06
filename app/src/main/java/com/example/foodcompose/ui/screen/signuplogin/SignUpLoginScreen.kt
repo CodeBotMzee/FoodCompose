@@ -2,13 +2,10 @@ package com.example.foodcompose.ui.screen.signuplogin
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -16,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.foodcompose.R
 import com.example.foodcompose.ui.screen.signuplogin.login.LoginScreen
 import com.example.foodcompose.ui.screen.signuplogin.signup.SignUpScreen
@@ -26,12 +24,15 @@ import com.example.foodcompose.ui.theme.White
 
 
 @Composable
-fun SignUpLoginScreen(viewModel: SignUpLoginViewModel = hiltViewModel()) {
+fun SignUpLoginScreen(
+    navHostController: NavHostController,
+    viewModel: SignUpLoginViewModel = hiltViewModel()
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        var tabIndex by rememberSaveable { mutableStateOf(0) }
+        var tabIndex by rememberSaveable { viewModel.pagerState }
         val tabsTitle = listOf("Login", "Sign Up")
 
         val textFieldColors = TextFieldDefaults.textFieldColors(
@@ -85,8 +86,16 @@ fun SignUpLoginScreen(viewModel: SignUpLoginViewModel = hiltViewModel()) {
 
         }
         when (tabIndex) {
-            0 -> LoginScreen(viewModel = viewModel, textFieldColors = textFieldColors)
-            1 -> SignUpScreen(viewModel = viewModel, textFieldColors = textFieldColors)
+            0 -> LoginScreen(
+                navHostController,
+                viewModel = viewModel,
+                textFieldColors = textFieldColors
+            )
+            1 -> SignUpScreen(
+                navHostController,
+                viewModel = viewModel,
+                textFieldColors = textFieldColors
+            )
         }
 
     }
