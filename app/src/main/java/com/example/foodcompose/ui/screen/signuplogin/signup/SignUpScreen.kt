@@ -10,23 +10,30 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.foodcompose.Home
+import com.example.foodcompose.R
 import com.example.foodcompose.navigateSingleTopTo
 import com.example.foodcompose.ui.components.FoodBottomButton
+import com.example.foodcompose.ui.components.FoodButton
 import com.example.foodcompose.ui.components.ProgressDialog
-import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
+import com.example.foodcompose.ui.screen.signuplogin.SignUpLoginViewModel
+import com.example.foodcompose.ui.screen.signuplogin.components.FoodIconButton
 import com.example.foodcompose.ui.theme.Primary
+import com.example.foodcompose.util.Constants
+import com.example.foodcompose.util.Constants.SIGN_UP
 
 @Composable
-fun SignUpScreen(navHostController: NavHostController,viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
+fun SignUpScreen(navHostController: NavHostController, viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -326,26 +333,42 @@ fun SignUpScreen(navHostController: NavHostController,viewModel: SignUpLoginView
                     .fillMaxWidth()
                     .height(45.dp)
             )
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+
+                Column(verticalArrangement = Arrangement.Bottom) {
+                    //SignUp Button
+                    FoodButton(onClick = {
+                        firstNameFieldEmpty = firstName.isEmpty()
+                        lastNameFieldEmpty = lastName.isEmpty()
+                        emailFieldEmpty = email.isEmpty()
+                        passwordFieldEmpty = password.isEmpty()
+                        confirmPasswordFieldEmpty = confirmPassword.isEmpty()
+                        if(firstNameFieldEmpty || lastNameFieldEmpty || emailFieldEmpty || passwordFieldEmpty || confirmPasswordFieldEmpty){
+                            Toast.makeText(context, "Fields can't be Empty", Toast.LENGTH_SHORT).show()
+                        }else if(password!=confirmPassword){
+                            Toast.makeText(context, "Password and Confirm Password do not Match", Toast.LENGTH_SHORT).show()
+                        }else{
+                            viewModel.signUp(moveTO = {
+                                navHostController.navigateSingleTopTo(Home.route)
+                            },context)
+                        }
+                    }, text = SIGN_UP)
+
+                    Divider(modifier = Modifier.height(10.dp))
+
+                    //Google Sign UP Button
+                    FoodIconButton(
+                        onClick = { /*TODO*/ },
+                        text = Constants.GOOGLE_SIGN_UP,
+                        painterResource(id = R.drawable.ic_google_logo),
+                        contentDescription = "Google Logo"
+                    )
+                }
+
+            }
 
         }
 
-        //SignUp Button
-        FoodBottomButton(onClick = {
-            firstNameFieldEmpty = firstName.isEmpty()
-            lastNameFieldEmpty = lastName.isEmpty()
-            emailFieldEmpty = email.isEmpty()
-            passwordFieldEmpty = password.isEmpty()
-            confirmPasswordFieldEmpty = confirmPassword.isEmpty()
-            if(firstNameFieldEmpty || lastNameFieldEmpty || emailFieldEmpty || passwordFieldEmpty || confirmPasswordFieldEmpty){
-                Toast.makeText(context, "Fields can't be Empty", Toast.LENGTH_SHORT).show()
-            }else if(password!=confirmPassword){
-                Toast.makeText(context, "Password and Confirm Password do not Match", Toast.LENGTH_SHORT).show()
-            }else{
-                viewModel.signUp(moveTO = {
-                    navHostController.navigateSingleTopTo(Home.route)
-                },context)
-            }
-        }, text = "Sign Up")
 
         if (dialogState) {
             ProgressDialog {

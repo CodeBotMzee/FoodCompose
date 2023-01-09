@@ -6,7 +6,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.foodcompose.ui.screen.SplashScreen
+import com.example.foodcompose.ui.screen.splash.SplashScreen
 import com.example.foodcompose.ui.screen.home.HomeScreen
 import com.example.foodcompose.ui.screen.signuplogin.SignUpLoginScreen
 

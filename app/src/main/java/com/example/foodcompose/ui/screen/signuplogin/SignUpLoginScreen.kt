@@ -1,5 +1,9 @@
 package com.example.foodcompose.ui.screen.signuplogin
 
+import android.app.Activity.RESULT_OK
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -17,10 +21,12 @@ import androidx.navigation.NavHostController
 import com.example.foodcompose.R
 import com.example.foodcompose.ui.screen.signuplogin.login.LoginScreen
 import com.example.foodcompose.ui.screen.signuplogin.signup.SignUpScreen
-import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
 import com.example.foodcompose.ui.theme.Black
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.ui.theme.White
+import com.google.android.gms.auth.api.identity.BeginSignInResult
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider.getCredential
 
 
 @Composable
@@ -33,6 +39,27 @@ fun SignUpLoginScreen(
             .fillMaxSize()
     ) {
         var tabIndex by rememberSaveable { viewModel.pagerState }
+        val launcher =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    try {
+                        val credentials =
+                            viewModel.oneTapClient.getSignInCredentialFromIntent(result.data)
+                        val googleIdToken = credentials.googleIdToken
+                        val googleCredentials = getCredential(googleIdToken, null)
+                        viewModel.signInWithGoogle(googleCredentials)
+                    } catch (it: ApiException) {
+                        print(it)
+                    }
+                }
+            }
+
+        fun launch(signInResult: BeginSignInResult) {
+            val intent =
+                IntentSenderRequest.Builder(signInResult.pendingIntent.intentSender).build()
+            launcher.launch(intent)
+        }
+
         val tabsTitle = listOf("Login", "Sign Up")
 
         val textFieldColors = TextFieldDefaults.textFieldColors(
@@ -88,6 +115,9 @@ fun SignUpLoginScreen(
         when (tabIndex) {
             0 -> LoginScreen(
                 navHostController,
+                launch = {
+                    launch(it)
+                },
                 viewModel = viewModel,
                 textFieldColors = textFieldColors
             )

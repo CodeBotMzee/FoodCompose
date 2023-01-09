@@ -7,7 +7,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,7 +16,7 @@ import com.example.foodcompose.Splash
 import com.example.foodcompose.navigateSingleTopTo
 import com.example.foodcompose.ui.components.FoodBottomButton
 import com.example.foodcompose.ui.components.ProgressDialog
-import com.example.foodcompose.ui.screen.signuplogin.viewmodel.HomeViewModel
+import com.example.foodcompose.util.Constants.SIGN_OUT
 
 @Composable
 fun HomeScreen(
@@ -44,7 +43,7 @@ fun HomeScreen(
                     Splash.route
                 )
             }
-        }, text = "Sign Out")
+        }, text = SIGN_OUT)
         if (dialogState) {
             ProgressDialog {}
         }

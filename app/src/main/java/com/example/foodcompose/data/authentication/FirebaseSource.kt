@@ -1,6 +1,7 @@
 package com.example.foodcompose.data.authentication
 
 
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
 
@@ -18,4 +19,7 @@ class FirebaseSource @Inject constructor(private val firebaseAuth: FirebaseAuth)
 
     //Sign Out
     fun signOut() = firebaseAuth.signOut()
+
+    fun signInUsingGoogleCredentials(GoogleCredential: AuthCredential) =
+        firebaseAuth.signInWithCredential(GoogleCredential)
 }
