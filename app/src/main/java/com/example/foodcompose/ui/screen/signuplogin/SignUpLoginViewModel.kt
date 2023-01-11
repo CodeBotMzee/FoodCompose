@@ -37,6 +37,7 @@ class SignUpLoginViewModel @Inject constructor(
     var signUpPassword = mutableStateOf("")
     var confirmPassword = mutableStateOf("")
 
+    //dialog state
     var dialogState = mutableStateOf(false)
 
     var user = authRepository.getCurrentUser()
@@ -83,36 +84,15 @@ class SignUpLoginViewModel @Inject constructor(
             if (signIn.isSuccessful) {
                 dialogState.value = false
                 launch(signIn.result)
-                Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
             } else {
                 dialogState.value = false
                 val errorMessage = signIn.exception?.localizedMessage
-                Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Google Sign In Failed", Toast.LENGTH_SHORT).show()
                 if (errorMessage != null) {
-                    Log.e("Sign In Error", errorMessage)
+                    Log.e("Google Sign In Error", errorMessage)
                 } else {
-                    Log.e("Sign In Error", "No Message")
+                    Log.e("Google Sign In Error", "No Message")
                 }
-            }
-        }
-    }
-
-    fun oneTapSignUp(context: Context, launch: (signInResult: BeginSignInResult) -> Unit) {
-        dialogState.value = true
-        authRepository.oneTapSignUpWithGoogle().addOnCompleteListener { signUp ->
-            if (signUp.isSuccessful) {
-                dialogState.value = false
-                launch(signUp.result)
-                Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
-            } else {
-                val errorMessage = signUp.exception?.localizedMessage
-                Toast.makeText(context, "Sign Up Failed", Toast.LENGTH_SHORT).show()
-                if (errorMessage != null) {
-                    Log.e("Sign Up Error", errorMessage)
-                } else {
-                    Log.e("Sign Up Error", "No Message")
-                }
-
             }
         }
     }

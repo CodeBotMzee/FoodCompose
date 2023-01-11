@@ -1,22 +1,16 @@
 package com.example.foodcompose.data.repository
 
 import com.example.foodcompose.data.authentication.FirebaseSource
-import com.example.foodcompose.util.Constants.SIGN_IN_REQUEST
-import com.example.foodcompose.util.Constants.SIGN_UP_REQUEST
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.UserProfileChangeRequest
 import javax.inject.Inject
-import javax.inject.Named
 
 class AuthRepository @Inject constructor(
     private val firebaseSource: FirebaseSource,
     private var oneTapClient: SignInClient,
-    @Named(SIGN_IN_REQUEST)
     private var signInRequest: BeginSignInRequest,
-    @Named(SIGN_UP_REQUEST)
-    private var signUpRequest: BeginSignInRequest,
 ) {
 
     fun getCurrentUser() = firebaseSource.getCurrentUser()
@@ -29,9 +23,6 @@ class AuthRepository @Inject constructor(
 
     fun oneTapSignInWithGoogle() =
         oneTapClient.beginSignIn(signInRequest)
-
-    fun oneTapSignUpWithGoogle() =
-        oneTapClient.beginSignIn(signUpRequest)
 
 
     fun signInWithGoogle(googleCredential: AuthCredential) =

@@ -1,11 +1,6 @@
 package com.example.foodcompose.util
 
 object Constants {
-
-    //Names
-    const val SIGN_IN_REQUEST = "signInRequest"
-    const val SIGN_UP_REQUEST = "signUpRequest"
-
     //Buttons
     const val GET_STARTED = "Get Started"
     const val SIGN_IN = "Sign In"

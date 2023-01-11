@@ -367,7 +367,7 @@ fun SignUpScreen(
 
                     //Google Sign UP Button
                     FoodIconButton(
-                        onClick = { viewModel.oneTapSignUp(context, launch) },
+                        onClick = { viewModel.oneTapSignIn(context, launch) },
                         text = Constants.GOOGLE_SIGN_UP,
                         painterResource(id = R.drawable.ic_google_logo),
                         contentDescription = "Google Logo"
