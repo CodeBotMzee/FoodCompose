@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.foodcompose.Home
 import com.example.foodcompose.R
+import com.example.foodcompose.Splash
 import com.example.foodcompose.navigateSingleTopTo
 import com.example.foodcompose.ui.screen.signuplogin.login.LoginScreen
 import com.example.foodcompose.ui.screen.signuplogin.signup.SignUpScreen

@@ -8,6 +8,9 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -17,7 +20,7 @@ import androidx.navigation.NavHostController
 import com.example.foodcompose.Home
 import com.example.foodcompose.R
 import com.example.foodcompose.SignUpLogin
-import com.example.foodcompose.navigateSingleTopTo
+import com.example.foodcompose.navigateSingleTopToNoBack
 import com.example.foodcompose.ui.components.FoodBottomButton
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.ui.theme.SplashBackGround
@@ -28,15 +31,18 @@ import com.example.foodcompose.util.Constants.GET_STARTED
 @Composable
 fun SplashScreen(
     navHostController: NavHostController,
-    viewModel: SplashViewModel = hiltViewModel()
+    //viewModel: SplashViewModel = hiltViewModel()
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = SplashBackGround)
     ) {
+//        val isUserAuthenticated by remember {
+//            mutableStateOf(viewModel.isUserAuthenticated)
+//        }
 
-        Log.d("IS USER LOGGED IN", viewModel.isUserAuthenticated.toString())
+        //Log.d("IS USER LOGGED IN", isUserAuthenticated.toString())
         Image(
             painter = painterResource(id = R.drawable.splash_background),
             contentDescription = "Background Image",
@@ -55,11 +61,13 @@ fun SplashScreen(
         }
         FoodBottomButton(
             onClick = {
-                if (viewModel.isUserAuthenticated) {
-                    navHostController.navigateSingleTopTo(Home.route)
-                } else {
-                    navHostController.navigateSingleTopTo(SignUpLogin.route)
-                }
+                navHostController.navigateSingleTopToNoBack(SignUpLogin.route)
+
+//                if (isUserAuthenticated) {
+//                    navHostController.navigateSingleTopToNoBack(Home.route)
+//                } else {
+//                }
+
             },
             text = GET_STARTED,
             colors = ButtonDefaults.buttonColors(backgroundColor = White, contentColor = Primary)
