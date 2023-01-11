@@ -11,8 +11,6 @@ import com.example.foodcompose.data.repository.UserRepository
 import com.example.foodcompose.data.room.AppDatabase
 import com.example.foodcompose.data.room.dao.UserDao
 import com.example.foodcompose.util.AuthHeaderInterceptor
-import com.example.foodcompose.util.Constants.SIGN_IN_REQUEST
-import com.example.foodcompose.util.Constants.SIGN_UP_REQUEST
 import com.example.foodcompose.util.Converters
 import com.example.foodcompose.util.LoggingInterceptor
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -32,7 +30,6 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -66,18 +63,7 @@ object AppModule {
     fun provideOneTapClient(@ApplicationContext context: Context) =
         Identity.getSignInClient(context)
 
-
     @Provides
-    @Named(SIGN_IN_REQUEST)
-    fun provideSignUpRequest(app: Application) =
-        BeginSignInRequest.builder().setGoogleIdTokenRequestOptions(
-            BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
-                .setServerClientId(app.getString(R.string.web_client_id))
-                .setFilterByAuthorizedAccounts(true).build()
-        ).setAutoSelectEnabled(true).build()
-
-    @Provides
-    @Named(SIGN_UP_REQUEST)
     fun provideSignInRequest(app: Application) =
         BeginSignInRequest.builder().setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
@@ -113,11 +99,8 @@ object AppModule {
     fun provideAuthRepository(
         firebaseSource: FirebaseSource,
         oneTapClient: SignInClient,
-        @Named(SIGN_IN_REQUEST)
         signInRequest: BeginSignInRequest,
-        @Named(SIGN_UP_REQUEST)
-        signUpRequest: BeginSignInRequest
-    ) = AuthRepository(firebaseSource, oneTapClient, signInRequest, signUpRequest)
+    ) = AuthRepository(firebaseSource, oneTapClient, signInRequest)
 
     @Singleton
     @Provides
