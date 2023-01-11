@@ -1,5 +1,6 @@
 package com.example.foodcompose.ui.screen.signuplogin.signup
 
+import android.content.Context
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -12,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -23,7 +23,6 @@ import androidx.navigation.NavHostController
 import com.example.foodcompose.Home
 import com.example.foodcompose.R
 import com.example.foodcompose.navigateSingleTopTo
-import com.example.foodcompose.ui.components.FoodBottomButton
 import com.example.foodcompose.ui.components.FoodButton
 import com.example.foodcompose.ui.components.ProgressDialog
 import com.example.foodcompose.ui.screen.signuplogin.SignUpLoginViewModel
@@ -31,16 +30,21 @@ import com.example.foodcompose.ui.screen.signuplogin.components.FoodIconButton
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.util.Constants
 import com.example.foodcompose.util.Constants.SIGN_UP
+import com.google.android.gms.auth.api.identity.BeginSignInResult
 
 @Composable
-fun SignUpScreen(navHostController: NavHostController, viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
+fun SignUpScreen(
+    context: Context,
+    navHostController: NavHostController,
+    launch: (signInResult: BeginSignInResult) -> Unit,
+    viewModel: SignUpLoginViewModel,
+    textFieldColors: TextFieldColors
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        //CONTEXT
-        val context = LocalContext.current
 
         //Fields States
         var firstName by rememberSaveable { viewModel.firstName }
@@ -333,7 +337,7 @@ fun SignUpScreen(navHostController: NavHostController, viewModel: SignUpLoginVie
                     .fillMaxWidth()
                     .height(45.dp)
             )
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
 
                 Column(verticalArrangement = Arrangement.Bottom) {
                     //SignUp Button
@@ -343,14 +347,19 @@ fun SignUpScreen(navHostController: NavHostController, viewModel: SignUpLoginVie
                         emailFieldEmpty = email.isEmpty()
                         passwordFieldEmpty = password.isEmpty()
                         confirmPasswordFieldEmpty = confirmPassword.isEmpty()
-                        if(firstNameFieldEmpty || lastNameFieldEmpty || emailFieldEmpty || passwordFieldEmpty || confirmPasswordFieldEmpty){
-                            Toast.makeText(context, "Fields can't be Empty", Toast.LENGTH_SHORT).show()
-                        }else if(password!=confirmPassword){
-                            Toast.makeText(context, "Password and Confirm Password do not Match", Toast.LENGTH_SHORT).show()
-                        }else{
+                        if (firstNameFieldEmpty || lastNameFieldEmpty || emailFieldEmpty || passwordFieldEmpty || confirmPasswordFieldEmpty) {
+                            Toast.makeText(context, "Fields can't be Empty", Toast.LENGTH_SHORT)
+                                .show()
+                        } else if (password != confirmPassword) {
+                            Toast.makeText(
+                                context,
+                                "Password and Confirm Password do not Match",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
                             viewModel.signUp(moveTO = {
                                 navHostController.navigateSingleTopTo(Home.route)
-                            },context)
+                            }, context)
                         }
                     }, text = SIGN_UP)
 
@@ -358,7 +367,7 @@ fun SignUpScreen(navHostController: NavHostController, viewModel: SignUpLoginVie
 
                     //Google Sign UP Button
                     FoodIconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { viewModel.oneTapSignUp(context, launch) },
                         text = Constants.GOOGLE_SIGN_UP,
                         painterResource(id = R.drawable.ic_google_logo),
                         contentDescription = "Google Logo"

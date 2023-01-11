@@ -14,11 +14,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.foodcompose.Home
 import com.example.foodcompose.R
+import com.example.foodcompose.navigateSingleTopTo
 import com.example.foodcompose.ui.screen.signuplogin.login.LoginScreen
 import com.example.foodcompose.ui.screen.signuplogin.signup.SignUpScreen
 import com.example.foodcompose.ui.theme.Black
@@ -38,6 +41,7 @@ fun SignUpLoginScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        val context = LocalContext.current
         var tabIndex by rememberSaveable { viewModel.pagerState }
         val launcher =
             rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -47,7 +51,11 @@ fun SignUpLoginScreen(
                             viewModel.oneTapClient.getSignInCredentialFromIntent(result.data)
                         val googleIdToken = credentials.googleIdToken
                         val googleCredentials = getCredential(googleIdToken, null)
-                        viewModel.signInWithGoogle(googleCredentials)
+                        viewModel.signInWithGoogle(googleCredentials, moveTO = {
+                            navHostController.navigateSingleTopTo(
+                                Home.route
+                            )
+                        }, context)
                     } catch (it: ApiException) {
                         print(it)
                     }
@@ -60,7 +68,7 @@ fun SignUpLoginScreen(
             launcher.launch(intent)
         }
 
-        val tabsTitle = listOf("Login", "Sign Up")
+        val tabsTitle = listOf("Sign In", "Sign Up")
 
         val textFieldColors = TextFieldDefaults.textFieldColors(
             unfocusedIndicatorColor = Black,
@@ -114,6 +122,7 @@ fun SignUpLoginScreen(
         }
         when (tabIndex) {
             0 -> LoginScreen(
+                context,
                 navHostController,
                 launch = {
                     launch(it)
@@ -122,7 +131,11 @@ fun SignUpLoginScreen(
                 textFieldColors = textFieldColors
             )
             1 -> SignUpScreen(
+                context,
                 navHostController,
+                launch = {
+                    launch(it)
+                },
                 viewModel = viewModel,
                 textFieldColors = textFieldColors
             )

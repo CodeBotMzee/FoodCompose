@@ -4,20 +4,15 @@ package com.example.foodcompose.ui.screen.signuplogin
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.foodcompose.data.repository.AuthRepository
-import com.example.foodcompose.util.Resource
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,9 +41,6 @@ class SignUpLoginViewModel @Inject constructor(
 
     var user = authRepository.getCurrentUser()
 
-    var oneTapSignInResponse by mutableStateOf<Resource<BeginSignInResult>>(Resource.success(null))
-    var signInWithGoogleResponse by mutableStateOf(Resource.success(false))
-
     fun newUserEmail() {
         signUpEmail.value = email.value
         email.value = ""
@@ -61,7 +53,7 @@ class SignUpLoginViewModel @Inject constructor(
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     dialogState.value = false
-                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
                     moveTO()
                     resetStates()
                 } else {
@@ -75,19 +67,75 @@ class SignUpLoginViewModel @Inject constructor(
                                 .show()
                             moveTODialogBuilder()
                         }
+                        "ERROR_WRONG_PASSWORD" -> {
+                            Toast.makeText(context, "Password Incorrect", Toast.LENGTH_SHORT)
+                                .show()
+
+                        }
                     }
                 }
             }
     }
 
-    fun oneTapSignIn() = viewModelScope.launch {
-        oneTapSignInResponse = Resource.Status.LOADING
-        oneTapSignInResponse = authRepository.oneTapSignInWithGoogle()
+    fun oneTapSignIn(context: Context, launch: (signInResult: BeginSignInResult) -> Unit) {
+        dialogState.value = true
+        authRepository.oneTapSignInWithGoogle().addOnCompleteListener { signIn ->
+            if (signIn.isSuccessful) {
+                dialogState.value = false
+                launch(signIn.result)
+                Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
+            } else {
+                dialogState.value = false
+                val errorMessage = signIn.exception?.localizedMessage
+                Toast.makeText(context, "Sign In Failed", Toast.LENGTH_SHORT).show()
+                if (errorMessage != null) {
+                    Log.e("Sign In Error", errorMessage)
+                } else {
+                    Log.e("Sign In Error", "No Message")
+                }
+            }
+        }
     }
 
-    fun signInWithGoogle(googleCredential: AuthCredential) = viewModelScope.launch {
-        oneTapSignInResponse = Resource.loading()
-        signInWithGoogleResponse = authRepository.signInWithGoogle(googleCredential)
+    fun oneTapSignUp(context: Context, launch: (signInResult: BeginSignInResult) -> Unit) {
+        dialogState.value = true
+        authRepository.oneTapSignUpWithGoogle().addOnCompleteListener { signUp ->
+            if (signUp.isSuccessful) {
+                dialogState.value = false
+                launch(signUp.result)
+                Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
+            } else {
+                val errorMessage = signUp.exception?.localizedMessage
+                Toast.makeText(context, "Sign Up Failed", Toast.LENGTH_SHORT).show()
+                if (errorMessage != null) {
+                    Log.e("Sign Up Error", errorMessage)
+                } else {
+                    Log.e("Sign Up Error", "No Message")
+                }
+
+            }
+        }
+    }
+
+    fun signInWithGoogle(googleCredential: AuthCredential, moveTO: () -> Unit, context: Context) {
+        dialogState.value = true
+        authRepository.signInWithGoogle(googleCredential).addOnCompleteListener {
+            if (it.isSuccessful) {
+                dialogState.value = false
+                Toast.makeText(context, "Sign In with GOOGLE Successful", Toast.LENGTH_SHORT).show()
+                moveTO()
+                resetStates()
+            } else {
+                dialogState.value = false
+                val errorMessage = it.exception?.localizedMessage
+                Toast.makeText(context, "Sign In  with GOOGLE Failed", Toast.LENGTH_SHORT).show()
+                if (errorMessage != null) {
+                    Log.e("Sign In Error", errorMessage)
+                } else {
+                    Log.e("Sign In Error", "No Message")
+                }
+            }
+        }
     }
 
     fun signUp(moveTO: () -> Unit, context: Context) {
@@ -126,6 +174,8 @@ class SignUpLoginViewModel @Inject constructor(
         signUpEmail.value = ""
         signUpPassword.value = ""
         confirmPassword.value = ""
+        // Pager State
+        pagerState.value = 0
     }
 
 }

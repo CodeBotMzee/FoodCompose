@@ -17,6 +17,13 @@ class FirebaseSource @Inject constructor(private val firebaseAuth: FirebaseAuth)
     //Get Current Logged In User
     fun getCurrentUser() = firebaseAuth.currentUser
 
+    //Forgot Password
+    fun forgotPasswordEmail(email: String) = firebaseAuth.sendPasswordResetEmail(email)
+
+    //Forgot Password Confirm
+    fun forgotPasswordConfirm(code: String, newPassword: String) =
+        firebaseAuth.confirmPasswordReset(code, newPassword)
+
     //Sign Out
     fun signOut() = firebaseAuth.signOut()
 

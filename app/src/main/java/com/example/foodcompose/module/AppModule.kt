@@ -66,9 +66,10 @@ object AppModule {
     fun provideOneTapClient(@ApplicationContext context: Context) =
         Identity.getSignInClient(context)
 
+
     @Provides
-    @Named(SIGN_UP_REQUEST)
-    fun provideSignInRequest(app: Application) =
+    @Named(SIGN_IN_REQUEST)
+    fun provideSignUpRequest(app: Application) =
         BeginSignInRequest.builder().setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
                 .setServerClientId(app.getString(R.string.web_client_id))
@@ -76,8 +77,8 @@ object AppModule {
         ).setAutoSelectEnabled(true).build()
 
     @Provides
-    @Named(SIGN_IN_REQUEST)
-    fun provideSignUpRequest(app: Application) =
+    @Named(SIGN_UP_REQUEST)
+    fun provideSignInRequest(app: Application) =
         BeginSignInRequest.builder().setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
                 .setServerClientId(app.getString(R.string.web_client_id))
