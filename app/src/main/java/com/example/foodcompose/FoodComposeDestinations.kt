@@ -1,17 +1,19 @@
 package com.example.foodcompose
 
-object Splash {
-    val route = "splash"
+
+interface Path {
+    val route: String
 }
 
-object SignUpLogin {
-    val route = "signup_login"
+object Splash : Path {
+    override val route = "splash"
 }
 
-object SïgnUp {
-    val route = "signup"
+object SignUpLogin : Path {
+    override val route = "signup_login"
 }
 
-object Login {
-    val route = "login"
+object Home : Path {
+    override val route = "home"
 }
+

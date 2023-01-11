@@ -1,5 +1,6 @@
 package com.example.foodcompose.ui.screen.signuplogin.login
 
+import android.content.Context
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -9,9 +10,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -20,16 +22,30 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.foodcompose.ui.components.FoodBottomButton
-import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
+import androidx.navigation.NavHostController
+import com.example.foodcompose.Home
+import com.example.foodcompose.R
+import com.example.foodcompose.navigateSingleTopTo
+import com.example.foodcompose.ui.components.DialogBuilder
+import com.example.foodcompose.ui.components.FoodButton
+import com.example.foodcompose.ui.components.ProgressDialog
+import com.example.foodcompose.ui.screen.signuplogin.SignUpLoginViewModel
+import com.example.foodcompose.ui.screen.signuplogin.components.FoodIconButton
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.ui.theme.SFProText
+import com.example.foodcompose.util.Constants.GOOGLE_SIGN_IN
+import com.example.foodcompose.util.Constants.SIGN_IN
+import com.google.android.gms.auth.api.identity.BeginSignInResult
 
 @Composable
-fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColors) {
+fun LoginScreen(
+    context: Context,
+    navHostController: NavHostController,
+    launch: (signInResult: BeginSignInResult) -> Unit,
+    viewModel: SignUpLoginViewModel,
+    textFieldColors: TextFieldColors
+) {
     Column(modifier = Modifier.fillMaxSize()) {
-
-        val context = LocalContext.current
 
         //Field States
         var email by rememberSaveable { viewModel.email }
@@ -42,6 +58,16 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
         //Are Fields Empty
         var emailFieldEmpty by remember { mutableStateOf(false) }
         var passwordFieldEmpty by remember { mutableStateOf(false) }
+
+        //Progress Dialog State
+        var dialogState by remember {
+            viewModel.dialogState
+        }
+
+        //Dialog Builder
+        var dialogBuilder by remember {
+            mutableStateOf(false)
+        }
 
         val focusManager = LocalFocusManager.current
 
@@ -155,21 +181,69 @@ fun LoginScreen(viewModel: SignUpLoginViewModel, textFieldColors: TextFieldColor
                     .fillMaxWidth()
                     .height(35.dp)
             )
+
             ClickableText(text = AnnotatedString("Forgot Password?"), style = TextStyle(
                 color = Primary,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.W600,
                 fontFamily = SFProText
             ), onClick = {/*TODO*/ })
+
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                //Sign IN Button
+                Column(verticalArrangement = Arrangement.Bottom) {
+                    FoodButton(onClick = {
+                        emailFieldEmpty = email.isEmpty()
+                        passwordFieldEmpty = password.isEmpty()
+                        if (emailFieldEmpty || passwordFieldEmpty) {
+                            Toast.makeText(context, "Fields can't be Empty", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            viewModel.signIn(
+                                moveTO = { navHostController.navigateSingleTopTo(Home.route) },
+                                context, moveTODialogBuilder = {
+                                    dialogBuilder = true
+                                }
+                            )
+                        }
+                    }, text = SIGN_IN)
+
+                    Divider(modifier = Modifier.height(10.dp))
+
+                    //Google Sign IN Button
+                    FoodIconButton(
+                        onClick = { viewModel.oneTapSignIn(context, launch) },
+                        text = GOOGLE_SIGN_IN,
+                        painterResource(id = R.drawable.ic_google_logo),
+                        contentDescription = "Google Logo"
+                    )
+                }
+
+            }
+
+
         }
 
-        //Login Button
-        FoodBottomButton(onClick = {
-            emailFieldEmpty = email.isEmpty()
-            passwordFieldEmpty = password.isEmpty()
-            if (!emailFieldEmpty && !passwordFieldEmpty) {
-                Toast.makeText(context, viewModel.login(), Toast.LENGTH_SHORT).show()
+        if (dialogState) {
+            ProgressDialog {
+                dialogState = false
             }
-        }, text = "Login")
+        }
+
+        if (dialogBuilder) {
+            DialogBuilder(
+                onButtonClick = {
+                    viewModel.pagerState.value = 1
+                    viewModel.newUserEmail()
+                },
+                onDismissRequest = {
+                    dialogBuilder = false
+                },
+                title = "Would You Like to Sign Up",
+                activeButtonText = "Sign UP",
+                dismissButtonText = "Cancel"
+            )
+        }
+
     }
 }

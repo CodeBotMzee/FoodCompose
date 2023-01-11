@@ -1,14 +1,26 @@
 package com.example.foodcompose.module
 
+import android.app.Application
 import android.content.Context
+import com.example.foodcompose.R
+import com.example.foodcompose.data.authentication.FirebaseSource
 import com.example.foodcompose.data.network.user.UserRemoteDataSource
 import com.example.foodcompose.data.network.user.UserService
+import com.example.foodcompose.data.repository.AuthRepository
 import com.example.foodcompose.data.repository.UserRepository
 import com.example.foodcompose.data.room.AppDatabase
 import com.example.foodcompose.data.room.dao.UserDao
 import com.example.foodcompose.util.AuthHeaderInterceptor
+import com.example.foodcompose.util.Constants.SIGN_IN_REQUEST
+import com.example.foodcompose.util.Constants.SIGN_UP_REQUEST
 import com.example.foodcompose.util.Converters
 import com.example.foodcompose.util.LoggingInterceptor
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -19,8 +31,8 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -29,7 +41,7 @@ import javax.inject.Singleton
 object AppModule {
     @Singleton
     @Provides
-    fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit =Retrofit.Builder()
+    fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
         .baseUrl("http://0.0.0.0:3001")
         .addConverterFactory(GsonConverterFactory.create(gson))
         .client(okHttpClient)
@@ -50,6 +62,33 @@ object AppModule {
             .build()
     }
 
+    @Provides
+    fun provideOneTapClient(@ApplicationContext context: Context) =
+        Identity.getSignInClient(context)
+
+
+    @Provides
+    @Named(SIGN_IN_REQUEST)
+    fun provideSignUpRequest(app: Application) =
+        BeginSignInRequest.builder().setGoogleIdTokenRequestOptions(
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
+                .setServerClientId(app.getString(R.string.web_client_id))
+                .setFilterByAuthorizedAccounts(true).build()
+        ).setAutoSelectEnabled(true).build()
+
+    @Provides
+    @Named(SIGN_UP_REQUEST)
+    fun provideSignInRequest(app: Application) =
+        BeginSignInRequest.builder().setGoogleIdTokenRequestOptions(
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
+                .setServerClientId(app.getString(R.string.web_client_id))
+                .setFilterByAuthorizedAccounts(false).build()
+        ).setAutoSelectEnabled(true).build()
+
+    @Provides
+    fun provideGoogleSignClient(app: Application, options: GoogleSignInOptions) =
+        GoogleSignIn.getClient(app, options)
+
     @Singleton
     @Provides
     fun provideRoomConverter(gson: Gson) = Converters(gson)
@@ -61,7 +100,29 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideUserService(retrofit: Retrofit):UserService = retrofit.create(UserService::class.java)
+    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideFirebaseSource(
+        firebaseAuth: FirebaseAuth,
+    ) = FirebaseSource(firebaseAuth)
+
+    @Singleton
+    @Provides
+    fun provideAuthRepository(
+        firebaseSource: FirebaseSource,
+        oneTapClient: SignInClient,
+        @Named(SIGN_IN_REQUEST)
+        signInRequest: BeginSignInRequest,
+        @Named(SIGN_UP_REQUEST)
+        signUpRequest: BeginSignInRequest
+    ) = AuthRepository(firebaseSource, oneTapClient, signInRequest, signUpRequest)
+
+    @Singleton
+    @Provides
+    fun provideUserService(retrofit: Retrofit): UserService =
+        retrofit.create(UserService::class.java)
 
     @Singleton
     @Provides
@@ -73,5 +134,6 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideUserRepository(remoteDataSource: UserRemoteDataSource,roomDataSource: UserDao) = UserRepository(remoteDataSource, roomDataSource)
+    fun provideUserRepository(remoteDataSource: UserRemoteDataSource, roomDataSource: UserDao) =
+        UserRepository(remoteDataSource, roomDataSource)
 }

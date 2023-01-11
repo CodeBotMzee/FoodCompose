@@ -1,38 +1,74 @@
 package com.example.foodcompose.ui.screen.signuplogin
 
+import android.app.Activity.RESULT_OK
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.foodcompose.Home
 import com.example.foodcompose.R
+import com.example.foodcompose.navigateSingleTopTo
 import com.example.foodcompose.ui.screen.signuplogin.login.LoginScreen
 import com.example.foodcompose.ui.screen.signuplogin.signup.SignUpScreen
-import com.example.foodcompose.ui.screen.signuplogin.viewmodel.SignUpLoginViewModel
 import com.example.foodcompose.ui.theme.Black
 import com.example.foodcompose.ui.theme.Primary
 import com.example.foodcompose.ui.theme.White
+import com.google.android.gms.auth.api.identity.BeginSignInResult
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider.getCredential
 
 
 @Composable
-fun SignUpLoginScreen(viewModel: SignUpLoginViewModel = hiltViewModel()) {
+fun SignUpLoginScreen(
+    navHostController: NavHostController,
+    viewModel: SignUpLoginViewModel = hiltViewModel()
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        var tabIndex by rememberSaveable { mutableStateOf(0) }
-        val tabsTitle = listOf("Login", "Sign Up")
+        val context = LocalContext.current
+        var tabIndex by rememberSaveable { viewModel.pagerState }
+        val launcher =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    try {
+                        val credentials =
+                            viewModel.oneTapClient.getSignInCredentialFromIntent(result.data)
+                        val googleIdToken = credentials.googleIdToken
+                        val googleCredentials = getCredential(googleIdToken, null)
+                        viewModel.signInWithGoogle(googleCredentials, moveTO = {
+                            navHostController.navigateSingleTopTo(
+                                Home.route
+                            )
+                        }, context)
+                    } catch (it: ApiException) {
+                        print(it)
+                    }
+                }
+            }
+
+        fun launch(signInResult: BeginSignInResult) {
+            val intent =
+                IntentSenderRequest.Builder(signInResult.pendingIntent.intentSender).build()
+            launcher.launch(intent)
+        }
+
+        val tabsTitle = listOf("Sign In", "Sign Up")
 
         val textFieldColors = TextFieldDefaults.textFieldColors(
             unfocusedIndicatorColor = Black,
@@ -85,8 +121,24 @@ fun SignUpLoginScreen(viewModel: SignUpLoginViewModel = hiltViewModel()) {
 
         }
         when (tabIndex) {
-            0 -> LoginScreen(viewModel = viewModel, textFieldColors = textFieldColors)
-            1 -> SignUpScreen(viewModel = viewModel, textFieldColors = textFieldColors)
+            0 -> LoginScreen(
+                context,
+                navHostController,
+                launch = {
+                    launch(it)
+                },
+                viewModel = viewModel,
+                textFieldColors = textFieldColors
+            )
+            1 -> SignUpScreen(
+                context,
+                navHostController,
+                launch = {
+                    launch(it)
+                },
+                viewModel = viewModel,
+                textFieldColors = textFieldColors
+            )
         }
 
     }

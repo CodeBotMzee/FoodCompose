@@ -18,7 +18,7 @@ fun <T, A> performGetOperation(
 
         val source = databaseQuery.invoke().map {
             Resource.success(it)
-        }
+        } as LiveData<Resource<T>>
         emitSource(source)
 
 
