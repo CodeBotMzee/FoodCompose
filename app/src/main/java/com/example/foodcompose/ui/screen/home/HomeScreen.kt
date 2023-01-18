@@ -1,8 +1,8 @@
 package com.example.foodcompose.ui.screen.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +16,9 @@ import com.example.foodcompose.Splash
 import com.example.foodcompose.navigateSingleTopTo
 import com.example.foodcompose.ui.components.FoodBottomButton
 import com.example.foodcompose.ui.components.ProgressDialog
+import com.example.foodcompose.ui.screen.home.components.FoodItemCard
+import com.example.foodcompose.ui.screen.home.components.TopAppBar
+import com.example.foodcompose.ui.theme.BackGroundLight
 import com.example.foodcompose.util.Constants.SIGN_OUT
 
 @Composable
@@ -27,26 +30,46 @@ fun HomeScreen(
     val dialogState by remember {
         viewModel.dialogState
     }
+    Scaffold(topBar = { TopAppBar() }) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.White)
-    ) {
-        val displayName = viewModel.userProfile?.displayName
-        if (displayName != null) {
-            Text(text = "Hello $displayName", modifier = Modifier.align(Alignment.Center))
-        }
-        FoodBottomButton(onClick = {
-            viewModel.signOut {
-                navHostController.navigateSingleTopTo(
-                    Splash.route
-                )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+                .padding(it)
+        ) {
+            val displayName = viewModel.userProfile?.displayName
+            if (displayName != null) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = BackGroundLight),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Hello $displayName",
+                    )
+
+                    FoodItemCard()
+
+
+                }
             }
-        }, text = SIGN_OUT)
-        if (dialogState) {
-            ProgressDialog {}
+
+            FoodBottomButton(onClick = {
+                viewModel.signOut {
+                    navHostController.navigateSingleTopTo(
+                        Splash.route
+                    )
+                }
+            }, text = SIGN_OUT)
+            if (dialogState) {
+                ProgressDialog {}
+            }
         }
     }
+
 
 }

@@ -33,8 +33,8 @@ fun FoodIconButton(
             .fillMaxWidth()
             .wrapContentHeight(),
         interactionSource = interactionSource,
-        elevation = ButtonDefaults.elevation(5.dp),
-        border = BorderStroke(1.dp, Primary),
+        elevation = ButtonDefaults.elevation(1.dp),
+        //border = BorderStroke(1.dp, Primary),
         colors = colors,
         contentPadding = PaddingValues(vertical = 15.dp)
     ) {

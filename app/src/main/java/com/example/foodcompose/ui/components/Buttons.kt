@@ -27,7 +27,7 @@ fun FoodBottomButton(
                 .fillMaxWidth()
                 .wrapContentHeight(),
             interactionSource = interactionSource,
-            elevation = ButtonDefaults.elevation(3.dp),
+            elevation = ButtonDefaults.elevation(1.dp),
             colors = colors,
             contentPadding = PaddingValues(vertical = 25.dp)
         ) {
@@ -50,7 +50,7 @@ fun FoodButton(
             .fillMaxWidth()
             .wrapContentHeight(),
         interactionSource = interactionSource,
-        elevation = ButtonDefaults.elevation(3.dp),
+        elevation = ButtonDefaults.elevation(1.dp),
         colors = colors,
         contentPadding = PaddingValues(vertical = 25.dp)
     ) {
