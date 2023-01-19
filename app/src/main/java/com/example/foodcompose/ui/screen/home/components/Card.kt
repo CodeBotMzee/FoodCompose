@@ -36,7 +36,7 @@ fun FoodItemCard() {
                 .wrapContentHeight()
                 .width(220.dp)
                 .padding(top = 50.dp),
-            shape = RoundedCornerShape(35.dp),
+            shape = MaterialTheme.shapes.medium,
             backgroundColor = White,
             elevation = 0.dp
         ) {

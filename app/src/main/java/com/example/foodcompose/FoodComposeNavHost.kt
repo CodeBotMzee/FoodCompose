@@ -30,6 +30,15 @@ fun FoodComposeNavHost(
         composable(route = Home.route) {
             HomeScreen(navHostController)
         }
+        composable(route = Favorite.route) {
+
+        }
+        composable(route = Profile.route) {
+
+        }
+        composable(route = OrderHistory.route) {
+
+        }
 
 
     }
